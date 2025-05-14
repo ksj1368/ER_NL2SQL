@@ -1,4 +1,3 @@
-# app.py
 import os
 import pymysql
 from db_connector import DatabaseConnector
