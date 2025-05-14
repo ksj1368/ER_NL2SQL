@@ -1,4 +1,3 @@
-# db_connector.py
 from sqlalchemy import create_engine, MetaData, inspect
 from schema_compressor import SchemaCompressor
 import json
