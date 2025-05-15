@@ -1,4 +1,3 @@
-# db_connector.py
 from sqlalchemy import create_engine, MetaData, inspect
 from schema_compressor import SchemaCompressor
 import json
@@ -25,15 +24,18 @@ class DatabaseConnector:
             "foreign_keys": foreign_keys,
             "primary_keys": primary_keys
         }
-    
+
     def get_full_schema(self):
         """전체 데이터베이스 스키마 정보를 수집하여 반환"""
         schema_info = {}
+        database_name = self.engine.url.database  # 데이터베이스 이름 추출
         tables = self.get_all_tables()
         
         for table in tables:
-            schema_info[table] = self.get_table_details(table)
-            
+            details = self.get_table_details(table)
+            # 정규화된 테이블 이름 사용
+            details['full_name'] = f"{database_name}.{table}"
+            schema_info[table] = details
         return schema_info
     
     def get_compressed_schema(self, query_keywords):
@@ -41,7 +43,7 @@ class DatabaseConnector:
         if not self.compressor:
             full_schema = self.get_full_schema()
             self.compressor = SchemaCompressor(full_schema)
-        
+            
         # 키워드 기반 테이블 필터링
         filtered_tables = [
             table for table in self.get_all_tables()
