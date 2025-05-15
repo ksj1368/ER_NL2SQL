@@ -40,10 +40,17 @@ class SchemaCompressor:
 
     def generate_compressed_prompt(self, filtered_tables):  # 인자 추가
         prompt = []
+        TABLE_ALIAS_MAP = {
+            'match_user': 'match_user_basic',
+            'user': 'match_user_basic',
+            'match': 'match_info'
+        }
         
         # 필터링된 테이블만 처리
         for table_name in filtered_tables:
-            details = self.schema_info[table_name]
+            actual_name = TABLE_ALIAS_MAP.get(table_name.lower(), table_name)
+            # details = self.schema_info[table_name]
+            details = self.schema_info[actual_name]
             
             # 컬럼 압축 로직
             columns = [col['name'] for col in details['columns']]
@@ -70,5 +77,4 @@ class SchemaCompressor:
                     table_desc += f" - {src_cols} → {fk['referred_table']}.{ref_cols}\n"
             
             prompt.append(table_desc)
-        
         return "\n\n".join(prompt)
