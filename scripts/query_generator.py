@@ -9,12 +9,22 @@ class QueryGenerator:
         self.db_connector = db_connector
         self.api_url = "https://api.perplexity.ai/chat/completions"
 
+    
+
     def _extract_keywords(self, query):
-        """자연어 질의에서 키워드 추출"""
-        tokens = re.findall(r'\w+', query.lower())
-        return set(tokens) - {'show', 'find', 'get', 'display'}
+        """한영 혼용 키워드 추출"""
+        KR_EN_MAP = {
+            '매치': 'match',
+            '유저': 'user',
+            '평균': 'avg',
+            '기본': 'basic'
+        }
+        tokens = re.findall(r'[\w가-힣]+', query.lower())
+        translated = [KR_EN_MAP.get(t, t) for t in tokens]
+        return set(translated) - {'show', 'find', 'get', 'display'}
     
     def generate_sql_query(self, natural_language_query):
+        '''자연어 질의를 SQL 쿼리로 변환'''
         keywords = self._extract_keywords(natural_language_query)
         compressed_schema = self.db_connector.get_compressed_schema(keywords)
         
@@ -23,11 +33,11 @@ class QueryGenerator:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        print(prompt)
+        print(prompt) # 프롬프트 확인용 나중에 제거하기
         payload = {
             "model": "sonar-pro",
             "messages": [
-                {"role": "system", "content": "당신은 자연어를 SQL 쿼리로 변환하는 전문가입니다. 주어진 데이터베이스 스키마를 기반으로 정확한 MySQL 쿼리를 생성해주세요."},
+                {"role": "system", "content": "당신은 자연어를 SQL 쿼리로 변환하는 데이터 분석 전문가입니다. 주어진 데이터베이스 스키마를 기반으로 정확한 MySQL 쿼리를 생성해주세요."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.3,
@@ -62,9 +72,9 @@ class QueryGenerator:
     '''
     def _create_prompt(self, query, schema):
         return f"""
-                [압축된 스키마 버전 1.2]
+                [압축된 스키마]
                 {schema}
-
+                
                 [질의 변환 규칙]
                 1. 압축 컬럼 사용시 원래 이름으로 확장 (예: char_* → char_id, char_name)
                 2. 테이블과 컬럼 이름을 정확하게 사용하세요.
@@ -73,7 +83,7 @@ class QueryGenerator:
 
                 자연어 질의: {query}
 
-                생성할 SQL 쿼리:
+                생성할 SQL 쿼리 (Markdown 없이):
                 """
                     
     def _extract_sql(self, response_text):
