@@ -1,8 +1,8 @@
-# app.py
 import os
 import pymysql
 from db_connector import DatabaseConnector
 from query_generator import QueryGenerator
+from query_validator import QueryValidator
 from dotenv import load_dotenv
 
 class TextToSQLApp:
@@ -27,7 +27,6 @@ class TextToSQLApp:
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
-        # 연결
         
     def process_query(self, natural_language_query):
         """자연어 질의를 처리하고 결과 반환"""
@@ -41,7 +40,11 @@ class TextToSQLApp:
             "execution_result": None,
             "error": None
         }
-        
+        validator = QueryValidator(self.db_connector.inspector)
+        try:
+            validator.validate_tables(sql_query)
+        except ValueError as e:
+            return {"error": str(e)}
         try:
             # 쿼리 실행
             with self.connection.cursor() as cursor:
