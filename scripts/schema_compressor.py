@@ -16,28 +16,6 @@ class SchemaCompressor:
                 prefix_groups[prefix].append(name)
         return prefix_groups
 
-    def compress_columns(self):
-        compressed = []
-        for table, details in self.schema_info.items():
-            # 컬럼 이름 압축
-            columns = [col['name'] for col in details['columns']]
-            prefix_groups = self._find_common_prefixes(columns)
-            
-            table_compressed = []
-            for prefix, group in prefix_groups.items():
-                if len(group) > 2:  # 3개 이상 컬럼에서만 압축 적용
-                    self.prefix_map[prefix] = group
-                    table_compressed.append(f"{prefix}_*")
-                else:
-                    table_compressed.extend(group)
-            
-            compressed.append({
-                "table": table,
-                "columns": table_compressed,
-                "relations": details['foreign_keys']
-            })
-        return compressed
-
     def generate_compressed_prompt(self, filtered_tables):  # 인자 추가
         prompt = []
         TABLE_ALIAS_MAP = {
