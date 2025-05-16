@@ -6,6 +6,7 @@ class QueryValidator:
         self.inspector = inspector
     
     def validate_tables(self, sql_query):
+        '''테이블이 데이터베이스에 존재하는지 확인'''
         used_tables = re.findall(r'\bFROM\s+(\w+)', sql_query, re.IGNORECASE)
         existing_tables = self.inspector.get_table_names()
         
