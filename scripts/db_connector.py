@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine, MetaData, inspect
 from schema_compressor import SchemaCompressor
-import json
 
 class DatabaseConnector:
     def __init__(self, connection_string):
