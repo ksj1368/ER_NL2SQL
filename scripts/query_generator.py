@@ -16,16 +16,48 @@ class QueryGenerator:
         self.cache_ttl = 3600  
     
     def _extract_keywords(self, query):
-        """한영 혼용 키워드 추출"""
-        KR_EN_MAP = {
-            '매치': 'match',
-            '유저': 'user',
-            '평균': 'avg',
-            '기본': 'basic'
+        """한국어 키워드 추출"""
+        
+        # 불용어 목록
+        stopwords = {
+            '알려주세요', '보여주세요', '찾아주세요', 
+            '알려줘', '보여줘', '찾아줘', 
+            '알고싶어', '뭐야', '무엇', '어떤',
+            '그리고', '또한', '또', '그럼',
+            '이', '그', '저', '이것', '그것', '저것',
+            '이번', '저번', '다음', '지난', '이전',
         }
+        
+        # 명사 추출
         tokens = re.findall(r'[\w가-힣]+', query.lower())
-        translated = [KR_EN_MAP.get(t, t) for t in tokens]
-        return set(translated) - {'show', 'find', 'get', 'display'}
+        
+        # 중요 키워드 우선 추출(숫자, 영어 포함)
+        important_words = [t for t in tokens if re.search(r'[0-9a-zA-Z]', t)]
+        
+        # 일반 키워드 추출(불용어 제외)
+        keywords = set(tokens) - stopwords
+        
+        # 중요 키워드와 일반 키워드 합치기
+        all_keywords = set(important_words) | keywords
+        
+        # 키워드 확장(유사어, 관련어 추가) -> 추후 개선 예정
+        keyword_expansions = {
+            '캐릭터': ['character', '실험체', 'character_id'],
+            '팀': ['team', '팀원', 'team_id', '아군'],
+            '경기': ['match', '게임', 'match_id', '매치'],
+            '유저': ['user', '플레이어', 'user_id'],
+            '아이템': ['equipment', '장비', '무기'],
+            '킬': ['kill', '처치', 'death'],
+            '데미지': ['damage', '피해량'],
+            '스킬': ['skill', '능력', 'amp', '스킬증폭'],
+        }
+        
+        expanded_keywords = set(all_keywords)
+        for kw in all_keywords:
+            if kw in keyword_expansions:
+                expanded_keywords.update(keyword_expansions[kw])
+        
+        return expanded_keywords
     
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
