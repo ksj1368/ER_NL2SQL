@@ -7,14 +7,14 @@ import json
 from collections import defaultdict
 
 class QueryGenerator:
-    def __init__(self, schema_info, db_connector):
+    def __init__(self, db_connector, json_loader):
         self.api_key = os.getenv("PERPLEXITY_API_KEY")
-        self.schema_info = schema_info
         self.db_connector = db_connector
+        self.json_loader = json_loader
         self.api_url = "https://api.perplexity.ai/chat/completions"
-
+        self.response_cache = {}  # 응답 캐싱
+        self.cache_ttl = 3600  
     
-
     def _extract_keywords(self, query):
         """한영 혼용 키워드 추출"""
         KR_EN_MAP = {
