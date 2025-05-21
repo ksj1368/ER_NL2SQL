@@ -233,27 +233,56 @@ class QueryGenerator:
         # 프롬프트 압축
         compressed_prompt = self._compress_prompt(prompt)
 
+        # API 페이로드
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        print(prompt) # 프롬프트 확인용 나중에 제거하기
+        
         payload = {
             "model": "sonar-pro",
             "messages": [
-                {"role": "system", "content": "당신은 자연어를 SQL 쿼리로 변환하는 데이터 분석 전문가입니다. 주어진 데이터베이스 스키마를 기반으로 정확한 MySQL 쿼리를 생성해주세요."},
-                {"role": "user", "content": prompt}
+                {
+                    "role": "system", 
+                    "content": "사용자가 입력한 한국어 자연어 질문을 기반으로, 주어진 데이터베이스 스키마의 영어로 된 테이블명과 컬럼명을 정확히 식별하고 적절한 MySQL 쿼리를 생성하는 것이 목적입니다. 복잡한 질의에는 서브쿼리, 조인, 집계 함수 등을 적절히 활용하세요."
+                },
+                {
+                    "role": "user", 
+                    "content": compressed_prompt
+                }
             ],
-            "temperature": 0.3,
-            "max_tokens": 1024
+            "temperature": 0.2,  # 더 보수적인 답변을 위해 낮은 temperature로 설정
+            "max_tokens": 1024,
+            "stream": True  # 스트리밍 활성화(True: 응답이 생성되는 즉시 부분적으로 실시간으로 전송)
         }
-
+        
         try:
-            response = requests.post(self.api_url, headers=headers, json=payload)
+            # 스트리밍 API 호출
+            response = requests.post(self.api_url, headers=headers, json=payload, stream=True)
             response.raise_for_status()
-            data = response.json()
-            sql_query = data["choices"][0]["message"]["content"]
-            return self._extract_sql(sql_query)
+            
+            # 스트리밍 응답 처리
+            full_response = ""
+            
+            for line in response.iter_lines():
+                if line:
+                    line_text = line.decode('utf-8')
+                    if line_text.startswith('data: '):
+                        try:
+                            data = json.loads(line_text[6:])
+                            if data.get('choices'):
+                                chunk = data['choices'][0].get('delta', {}).get('content', '')
+                                if chunk:
+                                    full_response += chunk
+                                    # 추후 실시간으로 처리할 수 있는 로직 추가하기
+                        except:
+                            pass
+            
+            # 캐싱 및 후처리
+            sql_query = self._extract_sql(full_response)
+            self._cache_response(query_hash, sql_query)
+            
+            return sql_query
         except Exception as e:
             return f"쿼리 생성 중 오류 발생: {str(e)}"
 
