@@ -141,6 +141,18 @@ class QueryGenerator:
             context.append("")
         
         return "\n".join(context)
+    
+    def _get_cached_response(self, query_hash):
+        """캐시된 응답 가져오기"""
+        if query_hash in self.response_cache:
+            cache_time, response = self.response_cache[query_hash]
+            if time.time() - cache_time < self.cache_ttl:
+                return response
+        return None
+    
+    def _cache_response(self, query_hash, response):
+        """응답 캐싱"""
+        self.response_cache[query_hash] = (time.time(), response)
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
         keywords = self._extract_keywords(natural_language_query)
