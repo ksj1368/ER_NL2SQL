@@ -183,10 +183,25 @@ class QueryGenerator:
                 compressed_lines.append(line)
         
         return '\n'.join(compressed_lines)
+    
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
+        # 쿼리 해시 계산(캐싱용)
+        query_hash = hashlib.md5(natural_language_query.encode()).hexdigest()
+        
+        # 캐싱 응답 확인
+        cached_result = self._get_cached_response(query_hash)
+        if cached_result:
+            return cached_result
+        
+        # 키워드 추출
         keywords = self._extract_keywords(natural_language_query)
-        compressed_schema = self.db_connector.get_compressed_schema(keywords)
+        
+        # 연관 테이블 찾기
+        related_tables = self._find_related_tables(keywords)
+        
+        # 컨텍스트 구성
+        schema_context = self._build_contextual_prompt(natural_language_query, related_tables)
         
         prompt = self._create_prompt(natural_language_query, compressed_schema)
         headers = {
