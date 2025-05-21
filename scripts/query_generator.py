@@ -1,6 +1,10 @@
 import os
 import requests
 import re
+import time
+import hashlib
+import json
+from collections import defaultdict
 
 class QueryGenerator:
     def __init__(self, schema_info, db_connector):
