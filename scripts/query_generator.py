@@ -58,7 +58,24 @@ class QueryGenerator:
                 expanded_keywords.update(keyword_expansions[kw])
         
         return expanded_keywords
-    
+        
+    def _find_related_tables(self, keywords):
+        """JSON 설명 기반 테이블 탐색"""
+        table_scores = defaultdict(float)
+        
+        for kw in keywords:
+            # 직접 테이블 이름 매칭
+            for table in self.json_loader.metadata:
+                if kw.lower() in table.lower():
+                    table_scores[table] += 2.0
+            
+            # JSON 로더의 관계 그래프 활용
+            related_tables = self.json_loader.get_related_tables(kw)
+            for table in related_tables:
+                table_scores[table] += 1.5
+
+        sorted_tables = sorted(table_scores.items(), key=lambda x: x[1], reverse=True)
+        return [table for table, score in sorted_tables if score > 0]
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
         keywords = self._extract_keywords(natural_language_query)
