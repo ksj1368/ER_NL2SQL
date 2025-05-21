@@ -76,6 +76,71 @@ class QueryGenerator:
 
         sorted_tables = sorted(table_scores.items(), key=lambda x: x[1], reverse=True)
         return [table for table, score in sorted_tables if score > 0]
+    
+    def _build_contextual_prompt(self, query, tables):
+        """맥락 기반 프롬프트 구성"""
+        # 기본 컨텍스트 구성
+        context = []
+        
+        # 테이블 관계 그래프 구축
+        relation_graph = self.db_connector.build_relation_graph()
+        
+        # 테이블별 중요도 순으로 정렬
+        for table in tables:
+            # 테이블 정보
+            desc = self.json_loader.metadata[table]['description']
+            context.append(f"## {table} 테이블: {desc}")
+            
+            # 주요 컬럼 정보(PK, FK, 키워드 관련 컬럼)
+            primary_keys = []
+            foreign_keys = []
+            important_columns = []
+            other_columns = []
+            
+            for col, info in self.json_loader.metadata[table]['columns'].items():
+                col_desc = f"{col}: {info['description']}"
+                if info.get('note'):
+                    col_desc += f" ({info['note']})"
+                    
+                if info.get('is_primary'):
+                    primary_keys.append(col_desc)
+                elif info.get('is_foreign'):
+                    foreign_keys.append(col_desc)
+                elif any(kw in info['description'].lower() for kw in query.lower().split()):
+                    important_columns.append(col_desc)
+                else:
+                    other_columns.append(col_desc)
+            
+            # 중요도 순서대로 컬럼 정보 추출
+            if primary_keys:
+                context.append("### 기본 키(PK):")
+                context.extend([f" - {col}" for col in primary_keys])
+                
+            if foreign_keys:
+                context.append("### 외래 키(FK):")
+                context.extend([f" - {col}" for col in foreign_keys])
+                
+            if important_columns:
+                context.append("### 중요 컬럼:")
+                context.extend([f" - {col}" for col in important_columns])
+            
+            # 나머지 컬럼은 너무 많으면 생략
+            if len(other_columns) <= 5:
+                context.append("### 기타 컬럼:")
+                context.extend([f" - {col}" for col in other_columns])
+            else:
+                context.append(f"### 기타 컬럼: {len(other_columns)}개 (생략)")
+            
+            # 테이블 관계 정보 추출
+            if table in relation_graph:
+                related = relation_graph[table]
+                if related:
+                    context.append(f"### {table} 테이블 관계:")
+                    context.append(f" - 관련 테이블: {', '.join(related)}")
+            
+            context.append("")
+        
+        return "\n".join(context)
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
         keywords = self._extract_keywords(natural_language_query)
