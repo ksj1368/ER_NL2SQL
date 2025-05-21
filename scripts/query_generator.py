@@ -153,6 +153,36 @@ class QueryGenerator:
     def _cache_response(self, query_hash, response):
         """응답 캐싱"""
         self.response_cache[query_hash] = (time.time(), response)
+    
+    def _compress_prompt(self, prompt):
+        """프롬프트 압축"""
+        # 중복된 줄 제거
+        lines = prompt.split('\n')
+        unique_lines = []
+        line_set = set()
+        
+        for line in lines:
+            stripped = line.strip()
+            if stripped and stripped not in line_set:
+                line_set.add(stripped)
+                unique_lines.append(line)
+        
+        # 너무 긴 설명 축약
+        compressed_lines = []
+        for line in unique_lines:
+            if len(line) > 100 and not line.startswith('##'):  # 헤더는 그대로 유지
+                # 중요함 정보만 추출
+                if ':' in line:
+                    parts = line.split(':', 1)
+                    # 첫 부분과 마지막 부분만 유지
+                    compressed = f"{parts[0]}: {parts[1][:40]}..." if len(parts[1]) > 40 else line
+                    compressed_lines.append(compressed)
+                else:
+                    compressed_lines.append(line[:80] + '...' if len(line) > 80 else line)
+            else:
+                compressed_lines.append(line)
+        
+        return '\n'.join(compressed_lines)
     def generate_sql_query(self, natural_language_query):
         '''자연어 질의를 SQL 쿼리로 변환'''
         keywords = self._extract_keywords(natural_language_query)
