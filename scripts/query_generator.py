@@ -203,7 +203,36 @@ class QueryGenerator:
         # 컨텍스트 구성
         schema_context = self._build_contextual_prompt(natural_language_query, related_tables)
         
-        prompt = self._create_prompt(natural_language_query, compressed_schema)
+        # 프롬프트
+        prompt = f"""
+        [데이터베이스 컨텍스트]
+        {schema_context}
+        [사고 과정]
+        1. 질문을 분석하여 필요한 정보가 무엇인지 파악합니다.
+        2. 관련된 테이블과 컬럼을 식별합니다.
+        3. 필요한 조인(JOIN) 관계를 결정합니다.
+        4. 필터링 조건을 설정합니다.
+        5. 정렬 또는 그룹화가 필요한지 결정합니다.
+        6. 최종 SQL 쿼리를 작성합니다.
+                        
+        [변환 규칙]
+        1. 테이블/컬럼 이름은 반드시 영어 원본 사용
+        2. 한국어 설명을 정확한 스키마 요소와 매핑
+        3. 사용자 입력은 한국어 자연어이며, 데이터베이스의 테이블 및 컬럼명은 영어
+        4. 테이블과 컬럼 이름을 정확하게 사용하세요.
+        5. 적절한 조인(JOIN)과 서브쿼리를 활용하세요.
+        6. 쿼리만 반환하고 설명은 제외해주세요.
+        7. 날짜/시간 비교에는 적절한 MySQL 함수를 사용하세요.
+        8. 효율적인 쿼리 실행을 위해 WHERE 조건을 최적화하세요.
+
+        자연어 질의: {natural_language_query}
+
+        생성할 SQL 쿼리 (SQL만 반환):
+        """
+        
+        # 프롬프트 압축
+        compressed_prompt = self._compress_prompt(prompt)
+
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
