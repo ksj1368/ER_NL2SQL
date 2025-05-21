@@ -285,39 +285,26 @@ class QueryGenerator:
             return sql_query
         except Exception as e:
             return f"쿼리 생성 중 오류 발생: {str(e)}"
-
-    '''def _create_prompt(self, query):
-        return f"""
-        다음 데이터베이스 스키마를 기반으로 자연어 질의를 MySQL 쿼리로 변환해주세요:
-
-        {self.schema_info}
-
-        자연어 질의: {query}
-
-        요구사항:
-        1. 정확한 MySQL 문법을 사용하세요.
-        2. 테이블과 컬럼 이름을 정확하게 사용하세요.
-        3. 적절한 조인(JOIN)과 서브쿼리를 활용하세요.
-        4. 쿼리만 반환하고 설명은 제외해주세요.
-
-        MySQL 쿼리:
-        """
-    '''
-    def _create_prompt(self, query, schema):
-        return f"""
-                [압축된 스키마]
-                {schema}
-                
-                [질의 변환 규칙]
-                1. 압축 컬럼 사용시 원래 이름으로 확장 (예: char_* → char_id, char_name)
-                2. 테이블과 컬럼 이름을 정확하게 사용하세요.
-                3. 적절한 조인(JOIN)과 서브쿼리를 활용하세요.
-                4. 쿼리만 반환하고 설명은 제외해주세요.
-
-                자연어 질의: {query}
-
-                생성할 SQL 쿼리 (Markdown 없이):
-                """
-                    
+    
     def _extract_sql(self, response_text):
+        """응답에서 SQL 쿼리 추출"""
+        # SQL 블록 추출
+        sql_match = re.search(r'``````', response_text, re.DOTALL)
+        if sql_match:
+            return sql_match.group(1).strip()
+        
+        # 일반 코드 블록 추출
+        code_match = re.search(r'``````', response_text, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        
+        # SQL 쿼리 추출
+        sql_keywords = ['SELECT', 'WITH', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER']
+        lines = response_text.split('\n')
+        for i, line in enumerate(lines):
+            if any(line.strip().upper().startswith(kw) for kw in sql_keywords):
+                # SQL 구문이 시작되는 줄부터 끝까지 반환
+                return '\n'.join(lines[i:]).strip()
+        
+        # 없을 경우 원본 생성 결과 반환
         return response_text.strip()
