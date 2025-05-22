@@ -1,4 +1,3 @@
-from sqlalchemy import inspect
 import re
 import sqlparse
 
