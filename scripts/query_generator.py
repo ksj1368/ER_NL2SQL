@@ -227,7 +227,7 @@ class QueryGenerator:
 
         자연어 질의: {natural_language_query}
 
-        생성할 SQL 쿼리 (SQL만 반환):
+        생성할 SQL 쿼리 (Markdown 없이):
         """
         
         # 프롬프트 압축
