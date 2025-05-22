@@ -1,5 +1,6 @@
 from sqlalchemy import inspect
 import re
+import sqlparse
 
 class QueryValidator:
     def __init__(self, inspector):
