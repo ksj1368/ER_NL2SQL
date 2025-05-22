@@ -289,17 +289,17 @@ class QueryGenerator:
     def _extract_sql(self, response_text):
         """응답에서 SQL 쿼리 추출"""
         # SQL 블록 추출
-        sql_match = re.search(r'``````', response_text, re.DOTALL)
+        sql_match = re.search(r'```(?:sql)?\s*(.*?)```', response_text, re.DOTALL)
         if sql_match:
             return sql_match.group(1).strip()
         
         # 일반 코드 블록 추출
-        code_match = re.search(r'``````', response_text, re.DOTALL)
+        code_match = re.search(r'```(?:python)?\s*(.*?)```', response_text, re.DOTALL)
         if code_match:
             return code_match.group(1).strip()
         
         # SQL 쿼리 추출
-        sql_keywords = ['SELECT', 'WITH', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER']
+        sql_keywords = ['SELECT', 'WITH', 'INSERT', 'WHERE', 'FROM', 'JOIN']
         lines = response_text.split('\n')
         for i, line in enumerate(lines):
             if any(line.strip().upper().startswith(kw) for kw in sql_keywords):
