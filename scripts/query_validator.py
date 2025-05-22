@@ -60,3 +60,62 @@ class QueryValidator:
         if 'UPDATE' in upper_query and 'SET' in upper_query and 'WHERE' not in upper_query:
             raise ValueError("WHERE 절이 없는 UPDATE 구문은 사용할 수 없습니다.")
     
+    def _extract_tables(self, sql_query):
+        '''SQL 쿼리에서 사용된 테이블 추출'''
+        
+        # 정규 표현식
+        from_pattern = r'\bFROM\s+(\w+)'
+        join_pattern = r'\bJOIN\s+(\w+)'
+        update_pattern = r'\bUPDATE\s+(\w+)'
+        insert_pattern = r'\bINSERT\s+INTO\s+(\w+)'
+        
+        # 테이블 목록 추출
+        tables = []
+        tables.extend(re.findall(from_pattern, sql_query, re.IGNORECASE))
+        tables.extend(re.findall(join_pattern, sql_query, re.IGNORECASE))
+        tables.extend(re.findall(update_pattern, sql_query, re.IGNORECASE))
+        tables.extend(re.findall(insert_pattern, sql_query, re.IGNORECASE))
+        
+        # 중복 제거 및 소문자 변환
+        return list(set([table.lower() for table in tables]))
+    
+    def _validate_columns(self, sql_query, tables):
+        '''테이블의 열이 실제로 존재하는지 확인'''
+        
+        # 모든 테이블의 열 목록 가져오기
+        table_columns = {}
+        for table in tables:
+            try:
+                columns = self.inspector.get_columns(table)
+                table_columns[table] = [col['name'].lower() for col in columns]
+            except:
+                # 테이블을 찾을 수 없는 경우(validate_tables에서 확인)
+                continue
+        
+        # SELECT 구문의 열 검증
+        select_pattern = r'SELECT\s+(.*?)\s+FROM'
+        select_match = re.search(select_pattern, sql_query, re.IGNORECASE)
+        
+        if select_match:
+            column_part = select_match.group(1)
+            
+            # *는 검사 제외
+            if column_part.strip() != '*':
+                columns = [c.strip() for c in column_part.split(',')]
+                
+                # 개별 열 검증(완전한 검증은 어렵기 때문에 기본적인 검증만 수행)
+                for col in columns:
+                    # 함수나 별칭이 있는 경우 제외
+                    if '(' in col or ' AS ' in col.upper() or '.' in col:
+                        continue
+                    
+                    # 모든 테이블에서 열 확인
+                    valid = False
+                    for table, cols in table_columns.items():
+                        if col.lower() in cols:
+                            valid = True
+                            break
+                    
+                    if not valid:
+                        print(f"경고: 열 '{col}'를 테이블 스키마에서 찾을 수 없습니다.")
+        return True
