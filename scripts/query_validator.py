@@ -18,9 +18,28 @@ class QueryValidator:
     
     def validate_tables(self, sql_query):
         '''테이블이 데이터베이스에 존재하는지 확인'''
-        used_tables = re.findall(r'\bFROM\s+(\w+)', sql_query, re.IGNORECASE)
+        # 안전하지 않은 쿼리 패턴 검사
+        self._check_safety(sql_query)
+        
+        # SQL 파싱
+        parsed = sqlparse.parse(sql_query)
+        if not parsed:
+            raise ValueError("SQL 구문을 파싱할 수 없습니다.")
+        
+        # 테이블 추출
+        used_tables = self._extract_tables(sql_query)
         existing_tables = self.inspector.get_table_names()
         
+        # 존재하지 않는 테이블 확인
+        invalid_tables = [table for table in used_tables if table not in existing_tables]
+        if invalid_tables:
+            raise ValueError(f"존재하지 않는 테이블: {', '.join(invalid_tables)}")
+        
+        # 열 검증
+        self._validate_columns(sql_query, used_tables)
+        
+        return True
+    
     def _check_safety(self, sql_query):
         '''안전하지 않은 SQL 패턴 검사'''
         upper_query = sql_query.upper()
