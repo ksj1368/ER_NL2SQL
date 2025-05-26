@@ -1,10 +1,24 @@
 from collections import defaultdict
 
 class SchemaCompressor:
-    def __init__(self, schema_info):
+    def __init__(self, schema_info, json_loader):
         self.schema_info = schema_info
-        self.prefix_map = {}
-
+        self.json_loader = json_loader
+        
+    def _filter_columns(self, table_name, columns):
+        """JSON 메타데이터 기반 컬럼 필터링"""
+        important_cols = []
+        metadata = self.json_loader.metadata.get(table_name, {})
+        
+        for col in columns:
+            col_name = col['name']
+            col_meta = metadata.get('columns', {}).get(col_name, {})
+            if col_meta.get('is_primary') or col_meta.get('is_foreign'):
+                important_cols.append(col)
+            elif '검색빈도' in col_meta.get('note', ''):
+                important_cols.append(col)
+        return important_cols if important_cols else columns
+    
     def _find_common_prefixes(self, names):
         prefix_groups = defaultdict(list)
         for name in names:
