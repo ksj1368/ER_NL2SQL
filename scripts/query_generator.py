@@ -55,7 +55,7 @@ class QueryGenerator:
         table_scores = defaultdict(float)
         
         for kw in keywords:
-            # 직접 테이블 이름 매칭
+            # 테이블 이름 매칭
             for table in self.json_loader.metadata:
                 if kw.lower() in table.lower():
                     table_scores[table] += 2.0
