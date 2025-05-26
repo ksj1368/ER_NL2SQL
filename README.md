@@ -1,7 +1,6 @@
 # Text to SQL for Eternal Return
 
 배틀로얄 게임 "[이터널 리턴(Eternal Return)](https://playeternalreturn.com/main?hl=ko-KR)"의 경기 데이터에 대한 자연어 질의를 SQL 쿼리로 자동 변환하는 프로젝트입니다. Perplexity API를 활용하여 SQL 쿼리에 대한 지식이 없어도 데이터 베이스에 저장된 게임 데이터에 대한 조회 및 분석을 쉽게 수행할 수 있도록 도와줍니다.
-
 ## 주요 기능
 
 ### 자연어 처리 및 SQL 변환
@@ -74,7 +73,9 @@ poetry run python scripts/app.py
 ```
 
 ### 예제 질의
+[Youtube](https://youtu.be/83sPVqEkRtg)
 ```
+"실험체 별 1등 횟수"
 "46 버전에서 가장 많이 사용된 무기 타입별 평균 킬 수"
 "특정 캐릭터 조합의 승률"
 ```
