@@ -17,7 +17,6 @@ class QueryGenerator:
         
     def _extract_keywords(self, query):
         """한국어 키워드 추출"""
-        
         # 불용어 목록
         stopwords = {
             '알려주세요', '보여주세요', '찾아주세요', 
@@ -41,17 +40,9 @@ class QueryGenerator:
         all_keywords = set(important_words) | keywords
         
         # 키워드 확장(유사어, 관련어 추가) -> 추후 개선 예정
-        keyword_expansions = {
-            '캐릭터': ['character', '실험체', 'character_id'],
-            '팀': ['team', '팀원', 'team_id', '아군'],
-            '경기': ['match', '게임', 'match_id', '매치'],
-            '유저': ['user', '플레이어', 'user_id'],
-            '아이템': ['equipment', '장비', '무기'],
-            '킬': ['kill', '처치', 'death'],
-            '데미지': ['damage', '피해량'],
-            '스킬': ['skill', '능력', 'amp', '스킬증폭'],
-        }
-        
+        with open("./mapping/keyword_mapping.json", 'r', encoding='utf-8') as file:
+            keyword_expansions = json.load(file)
+            
         expanded_keywords = set(all_keywords)
         for kw in all_keywords:
             if kw in keyword_expansions:
