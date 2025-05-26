@@ -1,0 +1,374 @@
+{
+    "tables": [
+      {
+        "table_name": "equipment",
+        "columns": [
+          {"name": "equipment_id", "type": "MEDIUMINT", "nullable": false, "description": "장비 고유 식별자(PK)"},
+          {"name": "equipment_name", "type": "VARCHAR(16)", "nullable": false, "description": "장비 이름"},
+          {"name": "equipment_main_type", "type": "VARCHAR(16)", "nullable": false, "description": "장비 주 유형", "note": "범주형(Weapon, Armor)"},
+          {"name": "equipment_sub_type", "type": "VARCHAR(16)", "nullable": false, "description": "장비 세부 유형", "note": "범주형"},
+          {"name": "equipment_grade", "type": "TINYINT", "nullable": false, "description": "장비 등급", "note": "범주형(0: 일반, 1: 고급, 2: 희귀, 3: 영웅, 4: 전설, 5: 초월)"},
+          {"name": "attack_power", "type": "TINYINT", "nullable": false, "description": "기본 공격력"},
+          {"name": "attack_power_bylv", "type": "TINYINT", "nullable": false, "description": "레벨당 증가 공격력"},
+          {"name": "defense", "type": "TINYINT", "nullable": false, "description": "기본 방어력"},
+          {"name": "defense_bylv", "type": "TINYINT", "nullable": false, "description": "레벨당 증가 방어력"},
+          {"name": "skill_amp", "type": "TINYINT", "nullable": false, "description": "스킬 증폭 수치"},
+          {"name": "skill_amp_bylv", "type": "TINYINT", "nullable": false, "description": "레벨당 증가 스킬 증폭"},
+          {"name": "skill_amp_ratio", "type": "TINYINT", "nullable": false, "description": "스킬 증폭 비율"},
+          {"name": "adaptive_force", "type": "TINYINT", "nullable": false, "description": "적응형 능력치"},
+          {"name": "max_hp", "type": "SMALLINT", "nullable": false, "description": "최대 체력"},
+          {"name": "max_hp_bylv", "type": "TINYINT", "nullable": false, "description": "레벨당 증가 최대 체력"},
+          {"name": "max_sp", "type": "SMALLINT", "nullable": false, "description": "최대 스테미나"},
+          {"name": "hp_regen_percent", "type": "SMALLINT", "nullable": false, "description": "체력 재생 비율"},
+          {"name": "sp_regen_percent", "type": "SMALLINT", "nullable": false, "description": "스테미나 재생 비율", "note": "최대 스테미나 *"},
+          {"name": "attack_speed_percent", "type": "TINYINT", "nullable": false, "description": "공격 속도 증가 비율"},
+          {"name": "critical_percent", "type": "TINYINT", "nullable": false, "description": "치명타 확률"},
+          {"name": "critical_damage_percent", "type": "TINYINT", "nullable": false, "description": "치명타 데미지 비율"},
+          {"name": "cooldown_percent", "type": "TINYINT", "nullable": false, "description": "쿨다운 감소 비율"},
+          {"name": "lifeSteal_percent", "type": "TINYINT", "nullable": false, "description": "생명력 흡수 비율"},
+          {"name": "normal_life_steel", "type": "TINYINT", "nullable": false, "description": "일반 공격 생명력 흡수량"},
+          {"name": "move_speed", "type": "FLOAT", "nullable": false, "description": "이동 속도"},
+          {"name": "move_speed_percent", "type": "FLOAT", "nullable": false, "description": "이동 속도 증가 비율"},
+          {"name": "sight_range", "type": "TINYINT", "nullable": false, "description": "시야 범위"},
+          {"name": "penetration_defense", "type": "TINYINT", "nullable": false, "description": "방어력 관통"},
+          {"name": "slow_resist_percent", "type": "TINYINT", "nullable": false, "description": "슬로우 저항 비율"},
+          {"name": "cooldown_limit_percent", "type": "TINYINT", "nullable": false, "description": "쿨다운 감소 한도"},
+          {"name": "tenacity_percent", "type": "TINYINT", "nullable": false, "description": "강인함 수치"},
+          {"name": "unique_skill_amp_percent", "type": "TINYINT", "nullable": false, "description": "고유 스킬 증폭 비율"}
+        ]
+      },
+      {
+        "table_name": "game_character",
+        "columns": [
+          {"name": "character_id", "type": "INT", "nullable": false, "description": "캐릭터 고유 식별자(PK)"},
+          {"name": "character_name", "type": "VARCHAR(24)", "nullable": false, "description": "캐릭터 이름"},
+          {"name": "attack_power", "type": "INT", "nullable": false, "description": "기본 공격력"},
+          {"name": "defense", "type": "INT", "nullable": false, "description": "기본 방어력"},
+          {"name": "skill_amp", "type": "INT", "nullable": false, "description": "기본 스킬 증폭 수치"},
+          {"name": "max_hp", "type": "SMALLINT", "nullable": false, "description": "기본 최대 체력"},
+          {"name": "max_sp", "type": "SMALLINT", "nullable": false, "description": "기본 최대 스킬 포인트"},
+          {"name": "hp_regen", "type": "TINYINT", "nullable": false, "description": "기본 체력 재생량"},
+          {"name": "sp_regen", "type": "TINYINT", "nullable": false, "description": "기본 스킬 포인트 재생량"},
+          {"name": "attack_speed", "type": "FLOAT", "nullable": false, "description": "기본 공격 속도"},
+          {"name": "attack_speed_limit", "type": "FLOAT", "nullable": false, "description": "공격 속도 한계"},
+          {"name": "move_speed", "type": "INT", "nullable": false, "description": "기본 이동 속도"},
+          {"name": "sight_range", "type": "INT", "nullable": false, "description": "기본 시야 범위"},
+          {"name": "growth_attack_power", "type": "INT", "nullable": false, "description": "레벨당 공격력 증가치"},
+          {"name": "growth_defense", "type": "INT", "nullable": false, "description": "레벨당 방어력 증가치"},
+          {"name": "growth_max_hp", "type": "INT", "nullable": false, "description": "레벨당 최대 체력 증가치"},
+          {"name": "growth_max_sp", "type": "INT", "nullable": false, "description": "레벨당 최대 스테미나 증가치"},
+          {"name": "growth_hp_regen", "type": "INT", "nullable": false, "description": "레벨당 체력 재생 증가치"},
+          {"name": "growth_sp_regen", "type": "INT", "nullable": false, "description": "레벨당 스테미나 재생 증가치"}
+        ]
+      },
+      {
+        "table_name": "game_character_weapon",
+        "columns": [
+          {"name": "character_id", "type": "INT", "nullable": false, "description": "캐릭터 고유 식별자(PK/FK)"},
+          {"name": "weapon_type", "type": "VARCHAR(26)", "nullable": false, "description": "무기 유형", "note": "범주형"},
+          {"name": "weapon_attack_power", "type": "INT", "nullable": false, "description": "무기 공격력"},
+          {"name": "weapon_defense", "type": "INT", "nullable": false, "description": "무기 방어력"},
+          {"name": "skill_amp", "type": "INT", "nullable": false, "description": "무기 스킬 증폭 수치"},
+          {"name": "max_hp", "type": "INT", "nullable": false, "description": "체력 증가량"},
+          {"name": "max_sp", "type": "INT", "nullable": false, "description": "무기 스테미나 증가량"},
+          {"name": "hp_regen", "type": "INT", "nullable": false, "description": "무기 체력 재생량"},
+          {"name": "sp_regen", "type": "INT", "nullable": false, "description": "무기 스테미나 재생량"},
+          {"name": "attack_speed", "type": "INT", "nullable": false, "description": "무기 공격 속도"},
+          {"name": "attack_speed_limit", "type": "INT", "nullable": false, "description": "무기 공격 속도 한계"},
+          {"name": "weapon_move_speed", "type": "INT", "nullable": false, "description": "무기 이동 속도"},
+          {"name": "sight_range", "type": "INT", "nullable": false, "description": "무기 시야 범위"}
+        ]
+      },
+      {
+        "table_name": "trait_info",
+        "columns": [
+          {"name": "trait_id", "type": "INT", "nullable": false, "description": "특성 식별자(PK)"},
+          {"name": "trait_name", "type": "VARCHAR(16)", "nullable": false, "description": "특성 이름"}
+        ]
+      },
+      {
+        "table_name": "match_info",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 고유 식별자(PK)"},
+          {"name": "start_dtm", "type": "TIMESTAMP", "nullable": false, "description": "서버의 게임 시작 시간으로 매치의 시작 시간"},
+          {"name": "match_mode", "type": "TINYINT", "nullable": false, "description": "경기 모드(솔로, 듀오, 스쿼드)"},
+          {"name": "season_id", "type": "SMALLINT", "nullable": false, "description": "시즌 식별자", "note": "30 = 시즌 7 프리시즌, 31 = 시즌 7"},
+          {"name": "version_major", "type": "SMALLINT", "nullable": false, "description": "게임 주 버전"},
+          {"name": "version_minor", "type": "TINYINT", "nullable": false, "description": "게임 부 버전"},
+          {"name": "weather_main", "type": "MEDIUMINT", "nullable": false, "description": "메인 날씨", "note": "범주형(10001: 흐림, 10002: 쾌청, 10003: 비, 10004: 모래바람, 10501: 무풍, 10502: 안개, 10503: 강풍, 10504: 벼락)"},
+          {"name": "weather_sub", "type": "MEDIUMINT", "nullable": false, "description": "서브 날씨", "note": "범주형(10501: 무풍, 10502: 안개, 10503: 강풍, 10504: 벼락)"},
+          {"name": "match_size", "type": "TINYINT", "nullable": false, "description": "경기 참가자 수", "note": "min: 21, max: 24"},
+          {"name": "match_avg_mmr", "type": "SMALLINT", "nullable": false, "description": "경기 평균 MMR"},
+          {"name": "match_expire_dtm", "type": "TIMESTAMP", "nullable": false, "description": "서버의 게임 종료 시간"}
+        ]
+      },
+      {
+        "table_name": "match_team_info",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "team_id", "type": "INT", "nullable": false, "description": "팀 식별자(PK)"},
+          {"name": "team_ranking", "type": "TINYINT", "nullable": false, "description": "팀 최종 순위"},
+          {"name": "escape_state", "type": "TINYINT", "nullable": false, "description": "탈출 상태", "note": "범주형(0: 탈출하지 않음,1: 전투 외 이유로 탈출 실패, 2: 적 유저에게 사망, 3: 탈출 성공)"},
+          {"name": "player_down", "type": "TINYINT", "nullable": false, "description": "적 플레이어를 빈사 상태로 만든 횟수"},
+          {"name": "team_down_in_auto_reserrection", "type": "TINYINT", "nullable": false, "description": "사출 방지 단계에서 기록한 킬"},
+          {"name": "team_down_after_auto_reserrection", "type": "TINYINT", "nullable": false, "description": "사출 방지 단계 외에 기록한 킬"},
+          {"name": "team_repeat_down_in_auto_reserrection", "type": "TINYINT", "nullable": false, "description": "사출 방지 단계에서 기록한 연속 킬 횟수"},
+          {"name": "team_repeat_down_after_auto_reserrection", "type": "TINYINT", "nullable": false, "description": "사출 방지 단계 외에 기록한 연속 킬 횟수"},
+          {"name": "team_elimination_count", "type": "TINYINT", "nullable": false, "description": "팀 별로 완전히 사망시킨 적의 수 (자동 부활 불가)"}
+        ]
+      },
+      {
+        "table_name": "match_user_basic",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK)"},
+          {"name": "team_id", "type": "TINYINT", "nullable": false, "description": "소속 팀 식별자"},
+          {"name": "except_premade_team", "type": "BOOL", "nullable": false, "description": "듀오와 매칭되지 않음 옵션 사용 여부", "note": "범주형(true: 사용, false: 사용안함)"},
+          {"name": "character_id", "type": "INT", "nullable": false, "description": "사용 캐릭터 식별자(FK)"},
+          {"name": "skin_id", "type": "INT", "nullable": false, "description": "유저가 사용한 스킨 id"},
+          {"name": "character_level", "type": "TINYINT", "nullable": false, "description": "사망/승리 시점의 캐릭터 레벨", "note": "max: 20"},
+          {"name": "total_kill", "type": "TINYINT", "nullable": false, "description": "게임 진행 중 유저의 킬 수"},
+          {"name": "total_death", "type": "TINYINT", "nullable": false, "description": "유저가 기록한 데스 수"},
+          {"name": "total_assist", "type": "TINYINT", "nullable": false, "description": "게임 진행 중 유저의 어시스트 수"},
+          {"name": "weapon_type", "type": "SMALLINT", "nullable": false, "description": "게임 종료 시 유저의 가장 높은 무기 숙련도의 번호(사용한 무기)"},
+          {"name": "weapon_level", "type": "TINYINT", "nullable": false, "description": "게임 종료 시 유저의 가장 높은 무기 숙련도의 레벨"},
+          {"name": "play_time", "type": "SMALLINT", "nullable": false, "description": "유저의 플레이 시간(초)"},
+          {"name": "watch_time", "type": "SMALLINT", "nullable": false, "description": "유저의 관전 시간(초)"},
+          {"name": "total_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "플레이어에게 준 총 데미지"},
+          {"name": "total_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "플레이어에게 받은 총 데미지"},
+          {"name": "total_heal", "type": "MEDIUMINT", "nullable": false, "description": "유저의 회복량"},
+          {"name": "heal_to_team", "type": "MEDIUMINT", "nullable": false, "description": "팀원에게 준 회복량"},
+          {"name": "use_loop_count", "type": "SMALLINT", "nullable": false, "description": "하이퍼루프 사용 횟수"},
+          {"name": "user_security_console_count", "type": "SMALLINT", "nullable": false, "description": "보안 콘솔(CCTV) 사용 횟수"},
+          {"name": "route_id", "type": "MEDIUMINT", "nullable": false, "description": "게임 시작 시 유저가 선택한 루트의 번호"},
+          {"name": "start_place", "type": "SMALLINT", "nullable": false, "description": "게임 시작 시 유저가 선택한 시작 지역", "note": "범주형()"},
+          {"name": "emotion_count", "type": "SMALLINT", "nullable": false, "description": "감정표현 사용 횟수"},
+          {"name": "fishing_count", "type": "SMALLINT", "nullable": false, "description": "낚시 횟수"},
+          {"name": "tactical_skill_id", "type": "SMALLINT", "nullable": false, "description": "최종 전술 스킬의 종류", "note": "범주형()"},
+          {"name": "tactical_skill_level", "type": "TINYINT", "nullable": false, "description": "최종 전술 스킬의 레벨"},
+          {"name": "tactical_skill_count", "type": "SMALLINT", "nullable": false, "description": "전술 스킬 사용 횟수"},
+          {"name": "credit_revival_count", "type": "TINYINT", "nullable": false, "description": "크레딧을 통해 부활한 횟수"},
+          {"name": "credit_revival_other_count", "type": "TINYINT", "nullable": false, "description": "크레딧으로 팀원을 부활시킨 횟수"}
+        ]
+      },
+      {
+        "table_name": "match_user_credit_time",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "minute", "type": "TINYINT", "nullable": false, "description": "경기 진행 시점(분 단위)(PK)", "note": "max: 20"},
+          {"name": "used_credit", "type": "SMALLINT", "nullable": false, "description": "사용한 크레딧"},
+          {"name": "gain_credit", "type": "SMALLINT", "nullable": false, "description": "획득한 크레딧"}
+        ]
+      },
+      {
+        "table_name": "match_user_damage",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "basic_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 준 기본 공격 피해량"},
+          {"name": "skill_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 준 스킬 공격 피해량"},
+          {"name": "direct_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 준 고정 피해량"},
+          {"name": "shield_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "보호막에 막힌 다른 생존자에게 입힌 피해량"},
+          {"name": "item_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 아이템 효과로 입힌 피해량"},
+          {"name": "trap_damage_to_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 준 함정 피해량"},
+          {"name": "basic_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 받은 기본 공격 피해량"},
+          {"name": "skill_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 받은 스킬 공격 피해량"},
+          {"name": "direct_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 받은 고정 피해량"},
+          {"name": "shield_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "보호막에 막힌 다른 생존자에게 입힌 피해량"},
+          {"name": "item_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 아이템 효과로 받은 피해량"},
+          {"name": "trap_damage_from_player", "type": "MEDIUMINT", "nullable": false, "description": "다른 생존자에게 받은 함정 피해량"}
+        ]
+      },
+      {
+        "table_name": "match_user_equipment",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "equipment_weapon", "type": "MEDIUMINT", "nullable": true, "description": "마지막으로 착용한 무기 (FK)"},
+          {"name": "equipment_chest", "type": "MEDIUMINT", "nullable": true, "description": "현재 옷 장비(FK)"},
+          {"name": "equipment_head", "type": "MEDIUMINT", "nullable": true, "description": "현재 머리 장비(FK)"},
+          {"name": "equipment_arm", "type": "MEDIUMINT", "nullable": true, "description": "현재 팔 장비(FK)"},
+          {"name": "equipment_leg", "type": "MEDIUMINT", "nullable": true, "description": "현재 다리 장비(FK)"},
+          {"name": "first_equipment_weapon", "type": "MEDIUMINT", "nullable": true, "description": "처음에 장착한 무기 (FK)", "note": "상위 등급을 아이템을 처음 장착하게 되면 해당 필드 값이 변경됩니다. 동일 등급 및 하위등급의 아이템 변경은 필드값을 갱신하지 않습니다. 영웅등급 이상아이템을 장착하게 되면 해당 아이템 코드로 필드값이 변경된 후 더 이상 필드값의 갱신이 발생하지 않습니다"},
+          {"name": "first_equipment_chest", "type": "MEDIUMINT", "nullable": true, "description": "처음에 장착한 옷 장비(FK)"},
+          {"name": "first_equipment_head", "type": "MEDIUMINT", "nullable": true, "description": "처음에 장착한 머리 장비(FK)"},
+          {"name": "first_equipment_arm", "type": "MEDIUMINT", "nullable": true, "description": "처음에 장착한 팔 장비(FK)"},
+          {"name": "first_equipment_leg", "type": "MEDIUMINT", "nullable": true, "description": "처음에 장착한 다리 장비(FK)"}
+        ]
+      },
+      {
+        "table_name": "match_user_gain_credit",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "total_gain_cr", "type": "SMALLINT", "nullable": false, "description": "총 획득한 크레딧 량"},
+          {"name": "start_cr", "type": "SMALLINT", "nullable": false, "description": "시작 크레딧"},
+          {"name": "time_elapse_cr", "type": "SMALLINT", "nullable": false, "description": "자동 크레딧 획득량"},
+          {"name": "time_elapse_bonus_cr", "type": "SMALLINT", "nullable": false, "description": "자동 크레딧 보너스 획득량"},
+          {"name": "wild_dog_cr", "type": "SMALLINT", "nullable": false, "description": "들개를 잡아 획득한 크레딧 량"},
+          {"name": "bat_cr", "type": "SMALLINT", "nullable": false, "description": "박쥐를 잡아 획득한 크레딧 량"},
+          {"name": "chicken_cr", "type": "SMALLINT", "nullable": false, "description": "닭을 잡아 획득한 크레딧 량"},
+          {"name": "boar_cr", "type": "SMALLINT", "nullable": false, "description": "멧돼지를 잡아 획득한 크레딧 량"},
+          {"name": "wolf_cr", "type": "SMALLINT", "nullable": false, "description": "늑대를 잡아 획득한 크레딧 량"},
+          {"name": "bear_cr", "type": "SMALLINT", "nullable": false, "description": "곰을 잡아 획득한 크레딧 량"},
+          {"name": "raven_cr", "type": "SMALLINT", "nullable": false, "description": "까마귀를 잡아 획득한 크레딧 량"},
+          {"name": "mutant_wild_dog_cr", "type": "SMALLINT", "nullable": false, "description": "변이 들개를 잡아 획득한 크레딧 량"},
+          {"name": "mutant_bat_cr", "type": "SMALLINT", "nullable": false, "description": "변이 박쥐를 잡아 획득한 크레딧 량"},
+          {"name": "mutant_chicken_cr", "type": "SMALLINT", "nullable": false, "description": "변이 잡아 획득한 크레딧 량"},
+          {"name": "mutant_boar_cr", "type": "SMALLINT", "nullable": false, "description": "변이 멧돼지를 잡아 획득한 크레딧 량"},
+          {"name": "mutant_wolf_cr", "type": "SMALLINT", "nullable": false, "description": "변이 늑대를 잡아 획득한 크레딧 량"},
+          {"name": "mutant_bear_cr", "type": "SMALLINT", "nullable": false, "description": "변이 곰을 잡아 획득한 크레딧 량"},
+          {"name": "mutant_raven_cr", "type": "SMALLINT", "nullable": false, "description": "변이 까마귀를 잡아 획득한 크레딧 량"},
+          {"name": "alpha_cr", "type": "SMALLINT", "nullable": false, "description": "알파를 잡아 획득한 크레딧 량"},
+          {"name": "omega_cr", "type": "SMALLINT", "nullable": false, "description": "오메가를 잡아 획득한 크레딧 량"},
+          {"name": "gamma_cr", "type": "SMALLINT", "nullable": false, "description": "감마를 잡아 획득한 크레딧 량"},
+          {"name": "wickline_cr", "type": "SMALLINT", "nullable": false, "description": "위클라인을 잡아 획득한 크레딧 량"},
+          {"name": "security_console_cr", "type": "SMALLINT", "nullable": false, "description": "보안 콘솔(CCTV)을 활성화하여 획득한 크레딧 량"},
+          {"name": "drone_cr", "type": "SMALLINT", "nullable": false, "description": "드론을 잡아 획득한 크레딧 량"},
+          {"name": "kill_cr", "type": "SMALLINT", "nullable": false, "description": "킬을 통해 획득한 크레딧 량"},
+          {"name": "kill_by_team_cr", "type": "SMALLINT", "nullable": false, "description": "팀원의 킬을 통해 획득한 크레딧 량"},
+          {"name": "rumi_cr", "type": "SMALLINT", "nullable": false, "description": "전투 모드의 안내 로봇(루미)에게 얻은 크레딧 량"},
+          {"name": "skill_cr", "type": "SMALLINT", "nullable": true, "description": "스킬을 통해 획득한 크레딧 량"},
+          {"name": "cointoss_cr", "type": "SMALLINT", "nullable": true, "description": "특성(코인토스)을 통해 획득한 크레딧 량"},
+          {"name": "item_bounty_cr", "type": "SMALLINT", "nullable": false, "description": "아이템(현상금)을 통해 획득한 크레딧 량"},
+          {"name": "kill_bounty_cr", "type": "SMALLINT", "nullable": false, "description": "처치 현상금을 통해 획득한 크레딧 량"},
+          {"name": "door_console_cr", "type": "SMALLINT", "nullable": false, "description": "출입 콘솔을 통해 획득한 크레딧 량"}
+        ]
+      },
+      {
+        "table_name": "match_user_mmr",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "before_mmr", "type": "SMALLINT", "nullable": false, "description": "유저의 게임 전 MMR", "note": "MMR은 RP 또는 Rank Point라고 부르기도 함"},
+          {"name": "after_mmr", "type": "SMALLINT", "nullable": false, "description": "유저의 게임 이후 MMR"},
+          {"name": "mmr_gain", "type": "SMALLINT", "nullable": false, "description": "유저의 MMR 변동량"},
+          {"name": "mmr_entry_loss", "type": "SMALLINT", "nullable": false, "description": "게임 입장시 유저가 지불한 RP 포인트"}
+        ]
+      },
+      {
+        "table_name": "match_user_sight",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "sight_score", "type": "TINYINT", "nullable": false, "description": "시야 점수"},
+          {"name": "camera_setup", "type": "TINYINT", "nullable": false, "description": "카메라 설치 횟수"},
+          {"name": "camera_remove", "type": "TINYINT", "nullable": false, "description": "카메라 제거 횟수"},
+          {"name": "emp_drone_setup", "type": "TINYINT", "nullable": false, "description": "EMP 드론 설치 횟수"},
+          {"name": "basic_drone_setup", "type": "TINYINT", "nullable": false, "description": "기본 드론 설치 횟수"}
+        ]
+      },
+      {
+        "table_name": "match_user_stat",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "hp", "type": "SMALLINT", "nullable": false, "description": "최대 체력"},
+          {"name": "sp", "type": "SMALLINT", "nullable": false, "description": "최대 스테미나"},
+          {"name": "hp_regen", "type": "SMALLINT", "nullable": false, "description": "최대 체력 재생"},
+          {"name": "sp_regen", "type": "SMALLINT", "nullable": false, "description": "최대 스테미나 재생"},
+          {"name": "defense", "type": "SMALLINT", "nullable": false, "description": "방어력"},
+          {"name": "attack_power", "type": "SMALLINT", "nullable": false, "description": "공격력"},
+          {"name": "attack_speed", "type": "SMALLINT", "nullable": false, "description": "공격 속도"},
+          {"name": "skill_amp", "type": "SMALLINT", "nullable": false, "description": "스킬 증폭"},
+          {"name": "cooldown_percent", "type": "TINYINT", "nullable": false, "description": "쿨다운 감소 비율"},
+          {"name": "adaptive_force", "type": "SMALLINT", "nullable": false, "description": "적응형 능력치", "note": "공격력 또는 스킬 증폭으로 변환됨"},
+          {"name": "adaptive_force_attack", "type": "SMALLINT", "nullable": false, "description": "공격력 적응 능력치", "note": "adaptive_force에서 변환된 공격력"},
+          {"name": "adaptive_force_amp", "type": "SMALLINT", "nullable": false, "description": "스킬 증폭 적응 능력치", "note": "adaptive_force에서 변환된 스킬 증폭"},
+          {"name": "move_speed", "type": "FLOAT", "nullable": false, "description": "이동 속도"},
+          {"name": "ooc_move_speed", "type": "FLOAT", "nullable": false, "description": "비전투 이동 속도"},
+          {"name": "sight_range", "type": "FLOAT", "nullable": false, "description": "시야 범위"},
+          {"name": "attack_range", "type": "FLOAT", "nullable": false, "description": "기본 공격 사거리"},
+          {"name": "critical_percent", "type": "TINYINT", "nullable": false, "description": "치명타 확률"},
+          {"name": "critical_damage", "type": "TINYINT", "nullable": false, "description": "치명타 피해량"},
+          {"name": "life_steal_percent", "type": "TINYINT", "nullable": false, "description": "모든 피해 흡혈 비율"},
+          {"name": "normal_life_steel", "type": "SMALLINT", "nullable": false, "description": "기본 공격 피해 흡혈 비율"},
+          {"name": "skill_life_steel", "type": "SMALLINT", "nullable": false, "description": "스킬 공격 피해 흡혈 비율"}
+        ]
+      },
+      {
+        "table_name": "match_user_trait",
+        "columns": [
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "core_trait_id", "type": "INT", "nullable": false, "description": "핵심 특성 식별자(FK)"},
+          {"name": "first_trait_id_one", "type": "INT", "nullable": false, "description": "첫 번째 특성의 첫 번째 id(FK)"},
+          {"name": "first_trait_id_two", "type": "INT", "nullable": false, "description": "첫 번째 특성의 두 번째 id(FK)"},
+          {"name": "second_trait_id_one", "type": "INT", "nullable": false, "description": "두 번째 특성의 두 번째 id(FK)"},
+          {"name": "second_trait_id_two", "type": "INT", "nullable": false, "description": "두 번째 특성의 첫 번째 id(FK)"}
+        ]
+      },
+      {
+        "table_name": "match_user_use_credit",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "total_used_cr", "type": "SMALLINT", "nullable": false, "description": "총 사용한 크레딧 량"},
+          {"name": "used_revival_cr", "type": "SMALLINT", "nullable": false, "description": "부활에 사용한 크레딧 량"},
+          {"name": "used_remote_drone_myself_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론으로 자신이 사용한 크레딧 량"},
+          {"name": "used_remote_drone_myteam_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론으로 아군에게 사용한 크레딧 량"},
+          {"name": "used_tactical_skill_cr", "type": "SMALLINT", "nullable": false, "description": "전술 스킬 업그레이드에 사용한 크레딧 량"},
+          {"name": "used_tree_of_life_cr", "type": "SMALLINT", "nullable": false, "description": "생명의 나무 획득에 소모한 크레딧"},
+          {"name": "used_meteorite_cr", "type": "SMALLINT", "nullable": false, "description": "운석 획득에 소모한 크레딧"},
+          {"name": "used_mythril_cr", "type": "SMALLINT", "nullable": false, "description": "미스릴 획득에 소모한 크레딧"},
+          {"name": "used_forcecore_cr", "type": "SMALLINT", "nullable": false, "description": "포스코어 획득에 소모한 크레딧"},
+          {"name": "used_blood_sample_cr", "type": "SMALLINT", "nullable": false, "description": "혈액팩 획득에 소모한 크레딧"},
+          {"name": "used_escapekit_cr", "type": "SMALLINT", "nullable": false, "description": "탈출 키 획득에 소모한 크레딧"},
+          {"name": "used_emp_drone_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 EMP 드론을 구매하는데 사용한 크레딧"},
+          {"name": "used_basic_drone_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 기본 드론을 구매하는데 사용한 크레딧"},
+          {"name": "used_camera_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 카메라를 구매하는데 사용한 크레딧"},
+          {"name": "used_guillotine_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 단두대를 구매하는데 사용한 크레딧"},
+          {"name": "used_c4_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 C4를 구매하는데 사용한 크레딧"},
+          {"name": "used_fried_chicken_cr", "type": "SMALLINT", "nullable": false, "description": "원격 드론을 통해 프라이드 치킨를 구매하는데 사용한 크레딧"},
+          {"name": "used_rumi_signiture_cr", "type": "SMALLINT", "nullable": false, "description": "안내 로봇(루미)에서 시그니쳐 등급 구매에 사용한 크레딧"},
+          {"name": "used_rumi_fragship_cr", "type": "SMALLINT", "nullable": false, "description": "안내 로봇(루미)에서 플래그십 등급 구매에 사용한 크레딧"},
+          {"name": "used_rumi_radial_cr", "type": "SMALLINT", "nullable": false, "description": "안내 로봇(루미)에서 일반 등급 구매에 사용한 크레딧"}
+        ]
+      },
+      {
+        "table_name": "user_match_kda_detail",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "kill_phase_one", "type": "TINYINT", "nullable": false, "description": "1 페이즈에 기록한 킬", "note": "1 페이즈(오프닝): 사망하더라도 일정 시간 이후에 부활하며, 팀이 전멸하더라도 일정 시간 이후 부활합니다."},
+          {"name": "kill_phase_two", "type": "TINYINT", "nullable": false, "description": "2 페이즈에 기록한 킬", "note": "2 페이즈(미들 게임): 크레딧을 소모하여 아군 실험체를 부활시킬 수 있습니다."},
+          {"name": "kill_phase_three", "type": "TINYINT", "nullable": false, "description": "3 페이즈에 기록한 킬", "note": "3 페이즈(엔드 게임): 아군 실험체를 부활시킬 수 없으며, 예외적으로 임시 안전 지대에서 승리하는 경우 팀원이 모두 부활합니다."},
+          {"name": "death_phase_one", "type": "TINYINT", "nullable": false, "description": "1 페이즈에 기록한 데스", "note": "1 페이즈(오프닝): 사망하더라도 일정 시간 이후에 부활하며, 팀이 전멸하더라도 일정 시간 이후 부활합니다."},
+          {"name": "death_phase_two", "type": "TINYINT", "nullable": false, "description": "2 페이즈에 기록한 데스", "note": "2 페이즈(미들 게임): 크레딧을 소모하여 아군 실험체를 부활시킬 수 있습니다."},
+          {"name": "death_phase_three", "type": "TINYINT", "nullable": false, "description": "3 페이즈에 기록한 데스", "note": "3 페이즈(엔드 게임): 아군 실험체를 부활시킬 수 없으며, 예외적으로 임시 안전 지대에서 승리하는 경우 팀원이 모두 부활합니다."}
+        ]
+      },
+      {
+        "table_name": "object",
+        "columns": [
+          {"name": "match_id", "type": "INT", "nullable": false, "description": "경기 식별자(PK/FK)"},
+          {"name": "user_id", "type": "INT", "nullable": false, "description": "유저 식별자(PK/FK)"},
+          {"name": "damage_to_rumi", "type": "MEDIUMINT", "nullable": false, "description": "안내 로봇(루미)에게 입힌 피해"},
+          {"name": "damage_to_monster", "type": "MEDIUMINT", "nullable": false, "description": "몬스터에게 입힌 피해"},
+          {"name": "total_kill_monster", "type": "SMALLINT", "nullable": false, "description": "게임 진행 중 유저의 야생동물  처치 수"},
+          {"name": "kill_alpha", "type": "TINYINT", "nullable": false, "description": "알파 처치 수"},
+          {"name": "kill_omega", "type": "TINYINT", "nullable": false, "description": "오메가 처치 수"},
+          {"name": "kill_gamma", "type": "TINYINT", "nullable": false, "description": "감마 처치 수"},
+          {"name": "kill_wickline", "type": "BOOL", "nullable": false, "description": "위클라인 처치 여부"},
+          {"name": "get_cube_red", "type": "TINYINT", "nullable": false, "description": "선혈 큐브를 획득한 횟수"},
+          {"name": "get_cube_green", "type": "TINYINT", "nullable": false, "description": "생명 큐브를 획득한 횟수"},
+          {"name": "get_cube_gold", "type": "TINYINT", "nullable": false, "description": "풍요 큐브를 획득한 횟수"},
+          {"name": "get_cube_purple", "type": "TINYINT", "nullable": false, "description": "우주 큐브를 획득한 횟수"},
+          {"name": "get_cube_skyblue", "type": "TINYINT", "nullable": false, "description": "바람 큐브를 획득한 횟수"},
+          {"name": "collect_tree_of_life", "type": "TINYINT", "nullable": false, "description": "생명의 나무를 채집한 횟수"},
+          {"name": "collect_meteorite", "type": "TINYINT", "nullable": false, "description": "운석을 채집한 횟수"},
+          {"name": "get_air_supply_purple", "type": "TINYINT", "nullable": false, "description": "영웅 등급(보라색)의 항공 보급을 획득한 횟수"},
+          {"name": "get_air_supply_red", "type": "TINYINT", "nullable": false, "description": "초월 등급(빨간색 )의 항공 보급을 획득한 횟수"}
+        ]
+      },
+      {
+        "table_name": "monster_info",
+        "columns": [
+          {"name": "monster_id", "type": "INT", "nullable": false, "description": "몬스터 식별자(PK)"},
+          {"name": "monster_name", "type": "VARCHAR(16)", "nullable": false, "description": "몬스터 이름"}
+        ]
+      }
+    ]
+  }
+  
