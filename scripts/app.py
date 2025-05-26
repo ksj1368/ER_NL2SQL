@@ -9,25 +9,62 @@ class TextToSQLApp:
     def __init__(self, db_config):
         # 데이터베이스 연결 설정
         connection_string = f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
-        self.db_connector = DatabaseConnector(connection_string)
-        
-        # 스키마 정보 로드
-        self.schema_info = self.db_connector.schema_to_prompt_format()
-        
-        # 쿼리 생성기 초기화
-        self.query_generator = QueryGenerator(self.schema_info, self.db_connector)
-        
-        # PyMySQL 연결 (실제 쿼리 실행용)
-        self.connection = pymysql.connect(
-            host=db_config['host'],
-            user=db_config['user'],
-            password=db_config['password'],
-            database=db_config['database'],
-            port=int(db_config['port']),
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+        # JSON 스키마 로더 초기화
+        self.json_loader = JsonSchemaLoader("./docs/data_discription.json")
+        self.db_config = db_config
+        # 데이터베이스 커넥터 초기화 (연결 풀 사용)
+        self.db_connector = DatabaseConnector(
+            connection_string=connection_string,
+            json_loader=self.json_loader,
+            pool_size=5  # 연결 풀 크기 설정
         )
         
+        # 쿼리 생성기 초기화
+        self.query_generator = QueryGenerator(
+            db_connector=self.db_connector,
+            json_loader=self.json_loader
+        )
+        
+        # 쿼리 검증기 초기화
+        self.validator = QueryValidator(self.db_connector.inspector)
+        
+        # 연결 풀 생성 (PyMySQL)
+        self.connection_pool = self._create_connection_pool(db_config)
+    
+    def _create_connection_pool(self, db_config):
+        """PyMySQL 연결 풀 생성"""
+        try:
+            # PyMySQL 직접 연결 (SQLAlchemy와 별도로 유지)
+            return pymysql.connect(
+                host=db_config['host'],
+                user=db_config['user'],
+                password=db_config['password'],
+                database=db_config['database'],
+                port=int(db_config['port']),
+                charset='utf8mb4',
+                cursorclass=DictCursor,
+                autocommit=True,  # 자동 커밋 활성화
+                connect_timeout=5
+            )
+        except Exception as e:
+            print(f"연결 풀 생성 중 오류: {str(e)}")
+            return None
+    
+    def _get_connection(self):
+        """연결 풀에서 연결 가져오기"""
+        db_config = self.db_config
+        if not self.connection_pool or not self.connection_pool.open:
+            db_config = {
+                'host': db_config['host'],
+                'user': db_config['user'],
+                'password': db_config['password'],
+                'database': db_config['database'],
+                'port': int(db_config['port']),
+            }
+            self.connection_pool = self._create_connection_pool(db_config)
+        
+        return self.connection_pool
+    
     def process_query(self, natural_language_query):
         """자연어 질의를 처리하고 결과 반환"""
         # SQL 쿼리 생성
