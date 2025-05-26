@@ -28,21 +28,14 @@ class SchemaCompressor:
                 prefix_groups[prefix].append(name)
         return prefix_groups
 
-    def generate_compressed_prompt(self, filtered_tables):  # 인자 추가
+    def generate_compressed_prompt(self, filtered_tables): 
         prompt = []
-        TABLE_ALIAS_MAP = {
-            'match_user': 'match_user_basic',
-            'user': 'match_user_basic',
-            'match': 'match_info'
-        }
         
         # 필터링된 테이블만 처리
         for table_name in filtered_tables:
-            actual_name = TABLE_ALIAS_MAP.get(table_name.lower(), table_name)
-            # details = self.schema_info[table_name]
-            details = self.schema_info[actual_name]
+            details = self.schema_info[table_name]
             
-            # 컬럼 압축 로직
+            # 컬럼 압축
             columns = [col['name'] for col in details['columns']]
             prefix_groups = self._find_common_prefixes(columns)
             
