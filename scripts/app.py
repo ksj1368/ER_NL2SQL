@@ -78,9 +78,10 @@ class TextToSQLApp:
         if hasattr(self, 'connection_pool') and self.connection_pool and self.connection_pool.open:
             self.connection_pool.close()
             print("데이터베이스 연결이 종료되었습니다.")
-# 간단한 CLI 인터페이스
+
 if __name__ == "__main__":
     load_dotenv()
+    
     # 환경 변수 설정
     os.environ["PERPLEXITY_API_KEY"] = os.getenv("PERPLEXITY_API_KEY")
     
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     
     try:
         while True:
-            query = input("\n자연어 질의를 입력하세요 (종료하려면 'exit' 입력): ")
+            query = input("\n자연어 질의를 입력하세요. (종료하려면 'exit' 입력): ")
             
             if query.lower() == 'exit':
                 break
@@ -112,7 +113,11 @@ if __name__ == "__main__":
                 print(result["error"])
             else:
                 print("\n실행 결과:")
-                for row in result["execution_result"]:
-                    print(row)
+                if not result["execution_result"]:
+                    print("결과가 없습니다.")
+                else:
+                    for row in result["execution_result"]:
+                        print(row)
+                    print(f"\n총 {result.get('rows_affected', 0)}개 행이 반환되었습니다.")
     finally:
         app.close()
