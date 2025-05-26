@@ -75,7 +75,11 @@ class QueryGenerator:
         
         # 테이블 관계 그래프 구축
         relation_graph = self.db_connector.build_relation_graph()
-        
+        # 전체 테이블 목록 먼저 제공
+        all_tables = list(self.json_loader.metadata.keys())
+        context.append("## 사용 가능한 전체 테이블 목록:")
+        context.append(f"테이블명: {', '.join(all_tables)}")
+        context.append("")
         # 테이블별 중요도 순으로 정렬
         for table in tables:
             # 테이블 정보
