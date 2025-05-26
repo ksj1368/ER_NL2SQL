@@ -35,31 +35,49 @@ class TextToSQLApp:
         
         # 결과 및 쿼리 실행 정보 준비
         result = {
-            "natural_language_query": natural_language_query,
-            "generated_sql": sql_query,
-            "execution_result": None,
-            "error": None
+            "natural_language_query": natural_language_query,  # 자연어 질문
+            "generated_sql": sql_query,                        # SQL 쿼리 생성
+            "execution_result": None,                          # SQL 쿼리 실행 결과
+            "error": None,                                     # 에러 로그
+            "query_plan": None                                 # 쿼리 실행 계획
         }
-        validator = QueryValidator(self.db_connector.inspector)
-        try:
-            validator.validate_tables(sql_query)
-        except ValueError as e:
-            return {"error": str(e)}
-        try:
-            # 쿼리 실행
-            with self.connection.cursor() as cursor:
-                cursor.execute(sql_query)
-                result["execution_result"] = cursor.fetchall()
-        except Exception as e:
-            result["error"] = str(e)
         
+        # 쿼리 검증
+        try:
+            # 쿼리 구문 및 테이블 검증
+            self.validator.validate_tables(sql_query)
+            
+            # 실행 계획 분석
+            try:
+                # SQLAlchemy로 실행 계획 분석
+                plan = self.db_connector.analyze_query(sql_query)
+                if plan:
+                    result["query_plan"] = [dict(row) for row in plan]
+            except:
+                # 실행 계획 분석 실패는 무시
+                pass
+            
+            # 쿼리 실행
+            connection = self._get_connection()
+            if connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    result["execution_result"] = cursor.fetchall()
+                    result["rows_affected"] = cursor.rowcount
+            else:
+                result["error"] = "데이터베이스 연결을 확인할 수 없습니다."
+                
+        except ValueError as e:
+            result["error"] = str(e)
+        except Exception as e:
+            result["error"] = f"쿼리 실행 중 오류: {str(e)}"
         return result
     
     def close(self):
-        """리소스 정리"""
-        if hasattr(self, 'connection') and self.connection:
-            self.connection.close()
-
+        """리소스 정리 및 데이터베이스 연결 종료"""
+        if hasattr(self, 'connection_pool') and self.connection_pool and self.connection_pool.open:
+            self.connection_pool.close()
+            print("데이터베이스 연결이 종료되었습니다.")
 # 간단한 CLI 인터페이스
 if __name__ == "__main__":
     load_dotenv()
