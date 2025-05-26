@@ -1,6 +1,4 @@
-import re
 from collections import defaultdict
-import itertools
 
 class SchemaCompressor:
     def __init__(self, schema_info):
