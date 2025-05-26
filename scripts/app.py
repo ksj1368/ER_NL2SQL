@@ -1,8 +1,10 @@
 import os
 import pymysql
+from pymysql.cursors import DictCursor
 from db_connector import DatabaseConnector
 from query_generator import QueryGenerator
 from query_validator import QueryValidator
+from json_schema_loader import JsonSchemaLoader
 from dotenv import load_dotenv
 
 class TextToSQLApp:
