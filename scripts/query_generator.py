@@ -191,7 +191,7 @@ class QueryGenerator:
         
         # 키워드 추출
         keywords = self._extract_keywords(natural_language_query)
-        
+
         # 연관 테이블 찾기
         related_tables = self._find_related_tables(keywords)
         
@@ -233,7 +233,6 @@ class QueryGenerator:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        
         payload = {
             "model": "sonar-pro",
             "messages": [
